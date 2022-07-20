@@ -2,7 +2,6 @@ const PostCategory = (sequelize, DataTypes) => {
   const PostCategory = sequelize.define("PostCategory", {
   postId: {
     allowNull: false,
-    autoIncrement: true,
     primaryKey: true,
     type: DataTypes.INTEGER,
     references: {
@@ -12,7 +11,6 @@ const PostCategory = (sequelize, DataTypes) => {
   },
   categoryId: {
     allowNull: false,
-    autoIncrement: true,
     primaryKey: true,
     type: DataTypes.INTEGER,
     references: {

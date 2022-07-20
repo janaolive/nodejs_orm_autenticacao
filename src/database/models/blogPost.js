@@ -16,7 +16,6 @@ const BlogPost = (sequelize, DataTypes) => {
     },
     userId: {
       allowNull: false,
-      foreignKey: true,
       type: DataTypes.INTEGER,
       references: {
         model: 'Users',
