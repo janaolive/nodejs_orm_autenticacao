@@ -1,17 +1,22 @@
 const usersService = require('../services/usersService');
 
 const usersController = {
-  /** @type {import('express').RequestHandler} */
-  async list(_req, res) {
-    const users = await usersService.list();
+  async create(req, res) {
+    const { code, data } = await usersService.create(req.body);
+    
+    res.status(code).json(data);
+  },
+
+  async findAll(_req, res) {
+    const users = await usersService.findAll();
+
     res.json(users);
   },
 
-  /** @type {import('express').RequestHandler} */
-  async add(req, res) {
-    const data = await usersService.validateBodyAdd(req.body);
-    const user = await usersService.add(data);
-    res.status(201).json(user);
+  async findUserById(req, res) {
+    const { id } = req.params;
+    const { code, data } = await usersService.findUserById(+id);
+    res.status(code).json(data); 
   },
 };
 

@@ -1,66 +1,55 @@
-const Joi = require('joi');
 // ref. de consulta: https://www.npmjs.com/package/joi
 
-const bcrypt = require('bcrypt');
-
+const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 const models = require('../database/models');
+const validate = require('./validate');
 
-const { throwNotFoundError, throwUnauthorizedError } = require('./utils');
+const secret = process.env.JWT_SECRET;
+
+const schemaUser = Joi.object({
+  displayName: Joi.string().min(8).max(255).required()
+.messages({ 
+    'string.min': '400|"displayName" length must be at least 8 characters long',
+  }),
+  email: Joi.string().email().max(255).required()
+.messages({
+    'string.email': '400|"email" must be a valid email',
+  }),
+  password: Joi.string().min(6).max(255).required()
+.messages({
+    'string.min': '400|"password" length must be at least 6 characters long',
+  }),
+  image: Joi.string().max(255),
+});
 
 const usersService = {
-  async validateBodyAdd(unknown) {
-    const schema = Joi.object({
-      displayName: Joi.string().required().min(8).max(255),
-      email: Joi.string().required().email().max(255),
-      password: Joi.string().required().min(6).max(255),
-      image: Joi.string().required().max(255),
-    });
-    const result = await schema.validateAsync(unknown);
-    return result;
-  },
-
-  async validateParamsId(unknown) {
-    const schema = Joi.object({
-      id: Joi.number().required().positive().integer(),
-    });
-    const result = await schema.validateAsync(unknown);
-    return result;
-  },
-  
-  async add(data) {
-    const modelHashed = {
-      ...data,
-      passwordHash: bcrypt.hash(data.passwordHash, 10),
-    };
-    const model = await models.user.create(modelHashed);
-    const newUser = model.toJSON();
-    const { passwordHash, ...user } = newUser;
-    return user;
-  },
-  
-  async list() {
-    const users = await models.user.findAll({
-      attributes: { exclude: ['password'] },
-    });
-    return users;
-  },
-
-  async getByEmailOrThrows(email) {
-    const user = await models.users.findOne({
-      where: { email },
-      raw: true,
-    });
-    if (!user) throwNotFoundError('"user" not found');
-    return user;
-  },
-
-  async verifyPassword(password, passwordHash) {
-    try {
-      await bcrypt.compare(password, passwordHash);
-    } catch (error) {
-      throwUnauthorizedError('"password" is invalid');
+  async create(values) {
+    const isErrorValidate = validate(schemaUser)(values);
+    if (isErrorValidate) {
+      return { code: isErrorValidate[0], data: { message: isErrorValidate[1] } };
     }
+
+    const emailIsRegistred = await models.user.findOne({ where: { email: values.email } });
+    if (emailIsRegistred) return { code: 409, data: { message: 'User already registered' } };
+
+    const newUser = await models.User.create(values, { raw: true });
+    const { dataValues: { id } } = newUser;
+    const token = jwt.sign({ data: id }, secret);
+    return { code: 201, data: { token } };
+  },
+
+  async findAll() {
+    return models.User.findAll({ attributes: { exclude: ['password'] } });
+  },
+
+  async findUserById(id) {
+    const user = await models.User.findByPk(id, { raw: true });
+    if (!user) return { code: 404, data: { message: 'User does not exist' } };
+
+    const { password, ...fieldsUser } = user;
+    return { code: 201, data: fieldsUser };
   },
 };
-  
+
 module.exports = usersService;

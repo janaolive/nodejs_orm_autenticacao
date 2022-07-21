@@ -1,45 +1,24 @@
-const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 
-const { throwUnauthorizedError } = require('./utils');
+const models = require('../database/models');
 
 const secret = process.env.JWT_SECRET;
 
 const loginService = {
-  async validateAuthorization(unknown) {
-    const schema = Joi.string().required();
-    try {
-      const result = await schema.validateAsync(unknown);
-      const [, token] = result.split(' ');
-      return token;
-    } catch (error) {
-      throwUnauthorizedError();
+  async login(email, password) {
+    if (!email || !password) {
+      return { code: 400, data: { message: 'Some required fields are missing' } };
     }
-  },
 
-  async validateBodyLogin(unknown) {
-    const schema = Joi.object({
-      email: Joi.string().required().email().max(255),
-      password: Joi.string().required().max(255),
+    const user = await models.User.findOne({
+      where: { email, password },
     });
-    const result = await schema.validateBodyLogin(unknown);
-    return result;
-  },
 
-  async makeToken(user) {
-    const { id, name } = user;
-    const payload = { data: { id, name } };
-    const token = jwt.sign(payload, secret);
-    return token;
-  },
+    if (!user) return { code: 400, data: { message: 'Invalid fields' } };
+    const { id } = user;
+    const token = jwt.sign({ data: id }, secret);
 
-  async readToken(token) {
-    try {
-      const { data } = jwt.verify(token, secret);
-      return data;
-    } catch (error) {
-      throwUnauthorizedError();
-    }
+    return { code: 200, data: { token } };
   },
 };
 
