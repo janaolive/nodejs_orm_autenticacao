@@ -5,7 +5,7 @@ const auth = require('../middlewares/auth');
 const usersRoutes = Router();
 
 usersRoutes.get('/', auth.auth, usersController.findAll);
-usersRoutes.get('/:id', auth.auth, usersController.findUserById);
+usersRoutes.get('/:id', auth.auth, usersController.findByPk);
 usersRoutes.post('/', usersController.create);
 
 module.exports = usersRoutes;

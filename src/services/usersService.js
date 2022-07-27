@@ -2,7 +2,7 @@
 
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
-const models = require('../database/models');
+const { User } = require('../database/models');
 const validate = require('./validate');
 
 const secret = process.env.JWT_SECRET;
@@ -30,21 +30,23 @@ const usersService = {
       return { code: isErrorValidate[0], data: { message: isErrorValidate[1] } };
     }
 
-    const emailIsRegistred = await models.user.findOne({ where: { email: values.email } });
+    const emailIsRegistred = await User.findOne({ where: { email: values.email } });
     if (emailIsRegistred) return { code: 409, data: { message: 'User already registered' } };
 
-    const newUser = await models.User.create(values, { raw: true });
+    const newUser = await User.create(values, { raw: true });
     const { dataValues: { id } } = newUser;
     const token = jwt.sign({ data: id }, secret);
     return { code: 201, data: { token } };
   },
 
   async findAll() {
-    return models.User.findAll({ attributes: { exclude: ['password'] } });
+    return User.findAll({ exclude: ['createdAt', 'updatedAt'] });
   },
 
-  async findUserById(id) {
-    const user = await models.User.findByPk(id, { raw: true });
+  async findByPk(id) {
+    const user = await User.findByPk(id, {
+      raw: true,
+      attributes: { exclude: ['createdAt', 'updatedAt'] } });
     if (!user) return { code: 404, data: { message: 'User does not exist' } };
 
     const { password, ...fieldsUser } = user;
