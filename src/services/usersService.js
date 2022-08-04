@@ -1,57 +1,65 @@
-// ref. de consulta: https://www.npmjs.com/package/joi
+// const Joi = require('joi');
 
-const Joi = require('joi');
-const jwt = require('jsonwebtoken');
-const { User } = require('../database/models');
-const validate = require('./validate');
+// const jwt = require('jsonwebtoken');
 
-const secret = process.env.JWT_SECRET;
+// const validate = require('./validate');
 
-const schemaUser = Joi.object({
-  displayName: Joi.string().min(8).max(255).required()
-.messages({ 
-    'string.min': '400|"displayName" length must be at least 8 characters long',
-  }),
-  email: Joi.string().email().max(255).required()
-.messages({
-    'string.email': '400|"email" must be a valid email',
-  }),
-  password: Joi.string().min(6).max(255).required()
-.messages({
-    'string.min': '400|"password" length must be at least 6 characters long',
-  }),
-  image: Joi.string().max(255),
-});
+// const models = require('../database/models');
+// require('dotenv').config();
 
-const usersService = {
-  async create(values) {
-    const isErrorValidate = validate(schemaUser)(values);
-    if (isErrorValidate) {
-      return { code: isErrorValidate[0], data: { message: isErrorValidate[1] } };
-    }
+// const schemaUser = Joi.object({
+//   displayName: Joi.string().min(8).max(255).required()
+// .messages({ 
+//     'string.min': '400|"displayName" length must be at least 8 characters long',
+//   }),
+//   email: Joi.string().email().max(255).required()
+// .messages({
+//     'string.email': '400|"email" must be a valid email',
+//   }),
+//   password: Joi.string().min(6).max(255).required()
+// .messages({
+//     'string.min': '400|"password" length must be at least 6 characters long',
+//   }),
+//   image: Joi.string().max(255),
+// });
 
-    const emailIsRegistred = await User.findOne({ where: { email: values.email } });
-    if (emailIsRegistred) return { code: 409, data: { message: 'User already registered' } };
+// const usersService = {
+//   async create(values) {
+//     const validateError = validate(schemaUser)(values);
+//     if (validateError) {
+//       return { code: validateError[0], data: { message: validateError[1] } };
+//     }
 
-    const newUser = await User.create(values, { raw: true });
-    const { dataValues: { id } } = newUser;
-    const token = jwt.sign({ data: id }, secret);
-    return { code: 201, data: { token } };
-  },
+//     const emailRegistred = await models.User.findOne({ where: { email: values.email } });
+//     if (emailRegistred) return { code: 409, data: { message: 'User already registered' } };
 
-  async findAll() {
-    return User.findAll({ exclude: ['createdAt', 'updatedAt'] });
-  },
+//     const newUser = await models.User.create(values, { raw: true });
+//     const { data: { id } } = newUser;
+//     const token = jwt.sign({ data: id }, process.env.JWT_SECRET);
+//     return { code: 201, data: { token } };
+//   },
 
-  async findByPk(id) {
-    const user = await User.findByPk(id, {
-      raw: true,
-      attributes: { exclude: ['createdAt', 'updatedAt'] } });
-    if (!user) return { code: 404, data: { message: 'User does not exist' } };
+//   async findAll() {
+//     return models.User.findAll({ exclude: ['password'] });
+//   },
 
-    const { password, ...fieldsUser } = user;
-    return { code: 201, data: fieldsUser };
-  },
-};
+//   async findByPk(id) {
+//     const user = await models.User.findByPk(id, { raw: true });
+//     if (!user) return { code: 404, data: { message: 'User does not exist' } };
 
-module.exports = usersService;
+//     const { password, ...fieldsUser } = user;
+//     return { code: 201, data: fieldsUser };
+//   },
+
+//   async remove(id) {
+//     const userPost = await models.User.findAll({ where: { userId: id } }, { raw: true });
+
+//     await Promise.all(
+//       userPost.map(async (post) => models.PostCategory.destroy({ where: { postId: post.id } })),
+//     );
+//     await models.BlogPost.destroy({ where: { userId: id } });
+//     await models.User.destroy({ where: { id } });
+//   },
+// };
+
+// module.exports = usersService;
