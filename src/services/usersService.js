@@ -38,16 +38,16 @@ const usersService = {
     return { code: 201, data: { token } };
   },
 
-  // async findAll() {
-  //   return models.User.findAll({ attributes: { exclude: ['password'] } });
-  // },
+  async findAll() {
+    return models.User.findAll({ attributes: { exclude: ['password'] } });
+  },
 
-  // async findByPk(id) {
-  //   const findUser = await models.User.findByPk(id);
-  //   if (!findUser) return { code: 404, data: { message: 'User does not exist' } };
-  //   const { password, ...fieldsUser } = findUser;
-  //   return { code: 200, data: fieldsUser };
-  // },
+  async findByPk(id) {
+    const user = await models.User.findByPk(id, { raw: true });
+    if (!user) return { code: 404, data: { message: 'User does not exist' } };
+    const { password, ...fieldsUser } = user;
+    return { code: 200, data: fieldsUser };
+  },
 };
 
 module.exports = usersService;
