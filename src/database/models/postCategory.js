@@ -20,7 +20,7 @@ const PostCategory = (sequelize, DataTypes) => {
   },
 },
   {
-    timestamp: false,
+    timestamps: false,
     tableName: 'PostCategories',
   });
   

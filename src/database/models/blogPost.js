@@ -32,7 +32,7 @@ const BlogPost = (sequelize, DataTypes) => {
     },
   },
   {
-    timestamp: false,
+    timestamps: false,
     tableName: 'Users',
   });
 
