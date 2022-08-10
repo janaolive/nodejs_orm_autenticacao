@@ -1,3 +1,4 @@
+const auth = require('../middlewares/auth');
 const usersService = require('../services/usersService');
 
 const usersController = {
@@ -16,6 +17,12 @@ const usersController = {
     const { code, data } = await usersService.findByPk(+id);
       res.status(code).json(data);
   },
+
+  // async remove(req, res) {
+  //   const userId = auth.readToken(req.headers.authorization);
+  //   await usersService.remove(userId.data);
+  //   res.status(204).end();
+  // },
 };
 
 module.exports = usersController;

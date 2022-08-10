@@ -48,6 +48,10 @@ const usersService = {
     const { password, ...fieldsUser } = user;
     return { code: 200, data: fieldsUser };
   },
+
+  // async remove(id) {
+  // },
+
 };
 
 module.exports = usersService;
