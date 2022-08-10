@@ -34,7 +34,8 @@ const usersService = {
 
     const newUser = await models.User.create(values);
     const { dataValues: { id } } = newUser;
-    const token = jwt.sign({ data: id }, process.env.JWT_SECRET);
+    console.log(`create token ${id}`);
+    const token = jwt.sign({ id }, process.env.JWT_SECRET);
     return { code: 201, data: { token } };
   },
 

@@ -17,10 +17,6 @@ const BlogPost = (sequelize, DataTypes) => {
     userId: {
       allowNull: false,
       type: DataTypes.INTEGER,
-      references: {
-        model: 'Users',
-        key: 'id'
-      }
     },
     published: {
       allowNull: true,
@@ -32,8 +28,8 @@ const BlogPost = (sequelize, DataTypes) => {
     },
   },
   {
-    timestamps: false,
-    tableName: 'Users',
+    createdAt: 'published',
+    updatedAt: 'updated',
   });
 
   BlogPost.associate = (models) => {

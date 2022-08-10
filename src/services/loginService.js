@@ -14,7 +14,8 @@ const loginService = {
     
     if (!user) return { code: 400, data: { message: 'Invalid fields' } };
     const { id } = user;
-    const token = jwt.sign({ data: id }, process.env.JWT_SECRET);
+    console.log(`create token ${id}`);
+    const token = jwt.sign({ id }, process.env.JWT_SECRET);
     return { code: 200, data: { token } };
   },
 };
