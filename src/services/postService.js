@@ -33,7 +33,7 @@ const postService = {
     };
 
     const newPost = await models.BlogPost.create(postValues);
-    console.log(`post ${newPost}`);
+    // console.log(`post ${newPost}`);
     await Promise.all(
       existingCategories.map(async ({ id }) => models.PostCategory
       .create({ postId: newPost.id, categoryId: id })),
