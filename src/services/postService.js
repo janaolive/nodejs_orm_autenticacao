@@ -77,6 +77,22 @@ const postService = {
     const updatedPost = await models.BlogPost.findByPk(postId, { include });
     return { code: 200, data: updatedPost };
   },
+
+  async remove(postId, userId) {
+    const post = await models.BlogPost.findByPk(postId);
+    
+    if (!post) return { code: 404, data: { message: 'Post does not exist' } };
+    
+    if (post.userId !== userId) {
+      return { code: 401, data: { message: 'Unauthorized user' } };
+    }
+
+    await models.PostCategory.destroy({ where: { postId } });
+    await models.BlogPost.destroy({ where: { id: postId } });
+
+    return { code: 204, data: '' };
+  },
+
 };
 
 module.exports = postService;

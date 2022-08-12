@@ -6,6 +6,7 @@ const postRoutes = Router();
 
 postRoutes.get('/:id', auth.auth, postController.findByPk);
 postRoutes.put('/:id', auth.auth, postController.update);
+postRoutes.delete('/:id', auth.auth, postController.remove);
 postRoutes.get('/', auth.auth, postController.findAll);
 postRoutes.post('/', auth.auth, postController.create);
 

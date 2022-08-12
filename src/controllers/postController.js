@@ -4,7 +4,6 @@ const postService = require('../services/postService');
 const postController = {
   async create(req, res) {
     const { id } = auth.readToken(req.headers.authorization);
-    // console.log(`post controller ${id}`);
     const { code, data } = await postService.create(req.body, id);
     return res.status(code).json(data);
   },
@@ -21,10 +20,16 @@ const postController = {
 
   async update(req, res) {
     const { id: userId } = auth.readToken(req.headers.authorization);
-    console.log(`post controller ${userId}`);
     const { code, data } = await postService.update(req.body, req.params.id, userId);
     res.status(code).json(data);
   },
+
+  async remove(req, res) {
+    const { id: userId } = auth.readToken(req.headers.authorization);
+    const { code, data } = await postService.remove(req.params.id, userId);
+    res.status(code).json(data);
+  },
+
 };
 
 module.exports = postController;
