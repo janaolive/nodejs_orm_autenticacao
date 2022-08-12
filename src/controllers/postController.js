@@ -18,6 +18,13 @@ const postController = {
     const { code, data } = await postService.findByPk(req.params.id);
     return res.status(code).json(data); 
   },
+
+  async update(req, res) {
+    const { id: userId } = auth.readToken(req.headers.authorization);
+    console.log(`post controller ${userId}`);
+    const { code, data } = await postService.update(req.body, req.params.id, userId);
+    res.status(code).json(data);
+  },
 };
 
 module.exports = postController;
