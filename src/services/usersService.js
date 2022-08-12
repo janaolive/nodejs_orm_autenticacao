@@ -50,8 +50,16 @@ const usersService = {
     return { code: 200, data: fieldsUser };
   },
 
-  // async remove(id) {
-  // },
+  async remove(id) {
+    const userPost = await models.BlogPost.findAll({ where: { userId: id } }, { raw: true });
+
+    await Promise.all(
+      userPost.map(async (post) => models.PostCategory.destroy({ where: { postId: post.id } })),
+    );
+
+    await models.BlogPost.destroy({ where: { userId: id } });
+    await models.User.destroy({ where: { id } });
+  },
 
 };
 
