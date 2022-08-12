@@ -14,7 +14,6 @@ const Category = (sequelize, DataTypes) => {
 {
   timestamps: false,
   tableName: 'Categories',
-  underscored: true,
 });
 
 Category.associate = (models) => {

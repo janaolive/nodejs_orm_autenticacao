@@ -46,7 +46,7 @@ const postService = {
       {
         include: [
           { model: models.User, as: 'user', attributes: { exclude: ['password'] } },
-          { model: models.Category, as: 'categories' },
+          { model: models.Category, as: 'categories', through: [] },
         ],
       },
     );

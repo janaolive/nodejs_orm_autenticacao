@@ -30,6 +30,7 @@ const BlogPost = (sequelize, DataTypes) => {
   {
     createdAt: 'published',
     updatedAt: 'updated',
+    tableName: 'BlogPosts'
   });
 
   BlogPost.associate = (models) => {
